@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>archived projects</title>
+    <style>
+        /* =========================================================
+           1. CORE STYLES
+           ========================================================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background-color: #ffffff;
+            color: #000000;
+            display: flex;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* =========================================================
+           2. SIDEBAR & WATERMARK
+           ========================================================= */
+        .sidebar {
+            width: 280px;
+            padding: 80px 40px;
+            position: fixed;
+            height: 100vh;
+            background: #fff;
+            z-index: 10;
+        }
+
+        .logo-watermark {
+            font-size: 12px;
+            font-weight: bold;
+            color: rgba(0, 0, 0, 0.06);
+            margin-bottom: 60px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            user-select: none;
+            pointer-events: none;
+        }
+
+        nav ul {
+            list-style: none;
+        }
+
+        nav ul li {
+            margin-bottom: 15px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            color: #000;
+            transition: color 0.2s ease;
+        }
+
+        nav ul li:hover, nav ul li.active {
+            color: #888;
+        }
+
+        .nav-title {
+            margin-top: 40px;
+        }
+
+        .nav-coming-soon {
+            color: #ccc !important;
+            cursor: default !important;
+            font-style: italic;
+        }
+
+        .nav-coming-soon:hover {
+            color: #ccc !important;
+        }
+
+        /* =========================================================
+           3. MAIN CONTENT AREA
+           ========================================================= */
+        .main-content {
+            margin-left: 280px;
+            padding: 80px 40px;
+            width: calc(100% - 280px);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            position: relative;
+        }
+
+        .page-section {
+            display: none;
+            width: 100%;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .page-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* =========================================================
+           4. GALLERY — original 3-column grid
+           ========================================================= */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            width: 100%;
+        }
+
+        .gallery img {
+            width: 100%;
+            aspect-ratio: 3 / 2;
+            object-fit: cover;
+            cursor: pointer;
+            transition: opacity 0.2s ease;
+        }
+
+        .gallery img:hover {
+            opacity: 0.8;
+        }
+
+        /* =========================================================
+           5. PROJECT LIST LAYOUT
+           ========================================================= */
+        .project-list {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            width: 100%;
+            align-items: center;
+        }
+
+        .project-list img {
+            width: 100%;
+            max-width: 1000px;
+            height: auto;
+            object-fit: contain;
+        }
+
+        /* =========================================================
+           6. ENLARGED VIEW & HOVER ARROWS
+           ========================================================= */
+        .enlarged-view-container {
+            display: none;
+            width: 100%;
+            height: 100%;
+            position: fixed;
+            top: 0;
+            left: 280px;
+            width: calc(100% - 280px);
+            background: #fff;
+            justify-content: center;
+            align-items: center;
+            z-index: 5;
+        }
+
+        .enlarged-photo {
+            max-width: 90%;
+            max-height: 85vh;
+            object-fit: contain;
+        }
+
+        .click-zone {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            color: transparent;
+            transition: color 0.2s;
+        }
+
+        .prev-zone { left: 0; width: 33.3%; }
+        .prev-zone:hover { color: #000; }
+        .prev-zone:hover::after { content: "←"; }
+
+        .close-zone { left: 33.3%; width: 33.4%; cursor: pointer; }
+
+        .next-zone { right: 0; width: 33.3%; }
+        .next-zone:hover { color: #000; }
+        .next-zone:hover::after { content: "→"; }
+
+        /* =========================================================
+           7. ABOUT PAGE
+           ========================================================= */
+        .about-container {
+            display: flex;
+            gap: 40px;
+            max-width: 900px;
+            width: 100%;
+            margin: 100px auto;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .about-text {
+            flex: 1;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .about-image {
+            flex: 1;
+        }
+
+        .about-image img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* =========================================================
+           8. COMING SOON PAGE
+           ========================================================= */
+        .coming-soon-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            min-height: 60vh;
+            padding: 0 20px;
+        }
+
+        .coming-soon-label {
+            font-size: 11px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: #bbb;
+            margin-bottom: 24px;
+        }
+
+        .coming-soon-title {
+            font-size: 42px;
+            font-weight: 400;
+            letter-spacing: -1px;
+            color: #000;
+            margin-bottom: 20px;
+            line-height: 1.1;
+        }
+
+        .coming-soon-line {
+            width: 40px;
+            height: 1px;
+            background: #000;
+            margin-bottom: 20px;
+        }
+
+        .coming-soon-subtitle {
+            font-size: 13px;
+            color: #aaa;
+            line-height: 1.8;
+            max-width: 320px;
+        }
+        /* =========================================================
+           9. HAMBURGER BUTTON (hidden on desktop)
+           ========================================================= */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 24px;
+            height: 17px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            position: fixed;
+            top: 24px;
+            left: 24px;
+            z-index: 100;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 100%;
+            height: 1.5px;
+            background: #000;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger.open span:nth-child(1) { transform: translateY(7.5px) rotate(45deg); }
+        .hamburger.open span:nth-child(2) { opacity: 0; }
+        .hamburger.open span:nth-child(3) { transform: translateY(-7.5px) rotate(-45deg); }
+
+        /* Dropdown nav panel */
+        .mobile-dropdown {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: #fff;
+            z-index: 90;
+            padding: 64px 24px 24px;
+            border-bottom: 1px solid #f0f0f0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            transform: translateY(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        .mobile-dropdown.open {
+            transform: translateY(0);
+        }
+
+        #mobile-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        #mobile-menu li {
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            color: #000;
+            padding: 6px 0;
+        }
+
+        #mobile-menu li.nav-coming-soon {
+            color: #ccc !important;
+            font-style: italic;
+        }
+
+        #mobile-menu li.active {
+            color: #888;
+        }
+
+        #mobile-menu li.nav-title {
+            margin-top: 12px;
+            color: #888;
+        }
+
+        /* =========================================================
+           10. RESPONSIVE — TABLET (max 1024px)
+           ========================================================= */
+        @media (max-width: 1024px) {
+            .gallery {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* =========================================================
+           11. RESPONSIVE — MOBILE (max 768px)
+           ========================================================= */
+        @media (max-width: 768px) {
+
+            body { display: block; }
+
+            /* Hide sidebar entirely */
+            .sidebar {
+                display: none;
+            }
+
+            /* Show hamburger on mobile */
+            .hamburger {
+                display: flex;
+            }
+
+            /* Show dropdown */
+            .mobile-dropdown {
+                display: block;
+            }
+
+            /* Main content fills full width */
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+                padding: 70px 20px 40px;
+            }
+
+            /* Gallery: 2 columns on mobile */
+            .gallery {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+
+            /* Enlarged view: full screen */
+            .enlarged-view-container {
+                left: 0;
+                width: 100%;
+            }
+
+            .click-zone {
+                font-size: 20px;
+            }
+
+            .coming-soon-title {
+                font-size: 32px;
+            }
+
+            .game-mobile-note {
+                display: block;
+            }
+
+            .game-iframe-wrap {
+                display: none;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .gallery {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Game mobile note (hidden on desktop) */
+        .game-mobile-note {
+            display: none;
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .game-mobile-note p {
+            font-size: 13px;
+            color: #aaa;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <nav id="nav-menu">
+            <ul id="menu">
+                <li data-target="basel">basel</li>
+                <li data-target="voyages">voyages</li>
+                <li data-target="film">on film</li>
+                <li data-target="projects">projects</li>
+                <li data-target="stories" class="nav-coming-soon">short stories</li>
+                <li data-target="music" class="nav-coming-soon">audio archives</li>
+                <li data-target="about" class="nav-title active">about the archive</li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Mobile dropdown (separate from sidebar, shown only on small screens) -->
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+    </button>
+    <nav class="mobile-dropdown" id="mobile-dropdown">
+        <ul id="mobile-menu">
+            <li data-target="basel">basel</li>
+            <li data-target="voyages">voyages</li>
+            <li data-target="film">on film</li>
+            <li data-target="projects">projects</li>
+            <li data-target="stories" class="nav-coming-soon">short stories</li>
+            <li data-target="music" class="nav-coming-soon">audio archives</li>
+            <li data-target="about" class="nav-title active">about the archive</li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+
+        <!-- ── BASEL ── -->
+        <div id="section-basel" class="page-section gallery-section">
+            <div class="gallery">
+                <img src="basel/p1.jpeg" alt="">
+                <img src="basel/p2.jpeg" alt="">
+                <img src="basel/p3.jpeg" alt="">
+                <img src="basel/p4.jpeg" alt="">
+                <img src="basel/p5.jpeg" alt="">
+                <img src="basel/p6.jpeg" alt="">
+                <img src="basel/p7.jpeg" alt="">
+                <img src="basel/p8.jpeg" alt="">
+                <img src="basel/p9.jpeg" alt="">
+                <img src="basel/p10.jpeg" alt="">
+                <img src="basel/p11.jpeg" alt="">
+                <img src="basel/p12.jpeg" alt="">
+                <img src="basel/p13.jpeg" alt="">
+                <img src="basel/p14.jpeg" alt="">
+                <img src="basel/p15.jpeg" alt="">
+                <img src="basel/p16.jpeg" alt="">
+                <img src="basel/p17.jpeg" alt="">
+                <img src="basel/p18.jpeg" alt="">
+                <img src="basel/p19.jpeg" alt="">
+                <img src="basel/p20.jpeg" alt="">
+                <img src="basel/p21.jpeg" alt="">
+            </div>
+            <div class="enlarged-view-container">
+                <img class="enlarged-photo" src="">
+                <div class="click-zone prev-zone" onclick="navigatePhoto(-1)"></div>
+                <div class="click-zone close-zone" onclick="closeEnlargedView()"></div>
+                <div class="click-zone next-zone" onclick="navigatePhoto(1)"></div>
+            </div>
+        </div>
+
+        <!-- ── VOYAGES ── -->
+        <div id="section-voyages" class="page-section gallery-section">
+            <div class="gallery">
+                <img src="voyage/photo_1.jpeg" alt="">
+                <img src="voyage/photo_2.jpeg" alt="">
+                <img src="voyage/photo_3.jpeg" alt="">
+                <img src="voyage/photo_4.jpeg" alt="">
+                <img src="voyage/photo_5.jpeg" alt="">
+                <img src="voyage/photo_6.jpeg" alt="">
+                <img src="voyage/photo_7.jpeg" alt="">
+                <img src="voyage/photo_8.jpeg" alt="">
+                <img src="voyage/photo_9.jpeg" alt="">
+                <img src="voyage/photo_10.jpeg" alt="">
+                <img src="voyage/photo_11.jpeg" alt="">
+                <img src="voyage/photo_12.jpeg" alt="">
+                <img src="voyage/photo_13.jpeg" alt="">
+                <img src="voyage/photo_14.jpeg" alt="">
+                <img src="voyage/photo_15.jpeg" alt="">
+            </div>
+            <div class="enlarged-view-container">
+                <img class="enlarged-photo" src="">
+                <div class="click-zone prev-zone" onclick="navigatePhoto(-1)"></div>
+                <div class="click-zone close-zone" onclick="closeEnlargedView()"></div>
+                <div class="click-zone next-zone" onclick="navigatePhoto(1)"></div>
+            </div>
+        </div>
+
+        <!-- ── ON FILM ── -->
+        <div id="section-film" class="page-section gallery-section">
+            <div class="gallery">
+                <img src="film/photo_1.jpeg" alt="">
+                <img src="cig/photo_1.jpeg" alt="">
+                <img src="people/photo_1.jpeg" alt="">
+                <img src="people/photo_2.jpeg" alt="">
+                <img src="cig/photo_2.jpeg" alt="">
+                <img src="film/photo_2.jpeg" alt="">
+                <img src="film/photo_3.jpeg" alt="">
+                <img src="cig/photo_3.jpeg" alt="">
+                <img src="people/photo_3.jpeg" alt="">
+                <img src="film/photo_4.jpeg" alt="">
+                <img src="cig/photo_4.jpeg" alt="">
+                <img src="people/photo_4.jpeg" alt="">
+                <img src="film/photo_5.jpeg" alt="">
+                <img src="cig/photo_5.jpeg" alt="">
+                <img src="people/photo_5.jpeg" alt="">
+                <img src="people/photo_6.jpeg" alt="">
+                <img src="cig/photo_6.jpeg" alt="">
+                <img src="film/photo_6.jpeg" alt="">
+                <img src="film/photo_7.jpeg" alt="">
+                <img src="cig/photo_7.jpeg" alt="">
+                <img src="people/photo_7.jpeg" alt="">
+                <img src="film/photo_8.jpeg" alt="">
+                <img src="cig/photo_8.jpeg" alt="">
+                <img src="people/photo_8.jpeg" alt="">
+                <img src="film/photo_9.jpeg" alt="">
+                <img src="cig/photo_9.jpeg" alt="">
+                <img src="people/photo_9.jpeg" alt="">
+                <img src="film/photo_10.jpeg" alt="">
+                <img src="cig/photo_10.jpeg" alt="">
+                <img src="people/photo_10.jpeg" alt="">
+                <img src="film/photo_11.jpeg" alt="">
+                <img src="cig/photo_11.jpeg" alt="">
+                <img src="people/photo_11.jpeg" alt="">
+                <img src="cig/photo_12.jpeg" alt="">
+                <img src="people/photo_12.jpeg" alt="">
+                <img src="cig/photo_13.jpeg" alt="">
+                <img src="cig/photo_14.jpeg" alt="">
+                <img src="cig/photo_15.jpeg" alt="">
+            </div>
+            <div class="enlarged-view-container">
+                <img class="enlarged-photo" src="">
+                <div class="click-zone prev-zone" onclick="navigatePhoto(-1)"></div>
+                <div class="click-zone close-zone" onclick="closeEnlargedView()"></div>
+                <div class="click-zone next-zone" onclick="navigatePhoto(1)"></div>
+            </div>
+        </div>
+
+        <!-- ── PROJECTS ── -->
+        <div id="section-projects" class="page-section">
+            <div class="project-list" style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+                
+                <div class="project-item" style="width: 100%; max-width: 1024px; margin-bottom: 100px; text-align: center;">
+                    
+                    <div class="game-iframe-wrap" style="position: relative; width: 100%; max-width: 1024px; margin: 0 auto; padding-bottom: min(56.25%, calc(56.25vw - 157px)); height: 0; background: #000; border: 1px solid #f0f0f0; overflow: hidden;">
+                        <!-- src is set/cleared by JS to stop audio when navigating away -->
+                        <iframe 
+                            id="game-iframe"
+                            src=""
+                            data-src="https://ingridwetrust.github.io/The-Desert-Ant-Game/"
+                            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"
+                            scrolling="no"
+                            allow="autoplay">
+                        </iframe>
+                    </div>
+
+                    <div class="game-mobile-note">
+                        <p>this game is built for keyboard & mouse —<br>best played on a desktop or laptop.</p>
+                    </div>
+                    
+                    <div style="margin-top: 40px; padding: 0 4px; display: flex; flex-direction: column; align-items: center; text-align: center;">
+                        <p class="coming-soon-label"> javascript  ·  p5.js  ·  2025
+                        </p>
+                        <h2 class="coming-soon-title">the desert<br>ant game</h2>
+                        <div class="coming-soon-line"></div>
+                        <p class="coming-soon-subtitle">
+                            A side-scrolling platformer built from scratch in p5.js custom collision detection, procedural enemy movement, sound design, and a full game loop. Written by hand, for fun.
+                        </p>
+                    </div>
+                </div>
+        
+            </div>
+        </div>
+
+        <!-- ── SHORT STORIES (coming soon) ── -->
+        <div id="section-stories" class="page-section">
+            <div class="coming-soon-container">
+                <p class="coming-soon-label">coming soon</p>
+                <h2 class="coming-soon-title">short<br>stories</h2>
+                <div class="coming-soon-line"></div>
+                <p class="coming-soon-subtitle">
+                    fiction and prose, written slowly and on good days.
+                </p>
+            </div>
+        </div>
+
+        <!-- ── AUDIO ARCHIVES (coming soon) ── -->
+        <div id="section-music" class="page-section">
+            <div class="coming-soon-container">
+                <p class="coming-soon-label">coming soon</p>
+                <h2 class="coming-soon-title">audio<br>archives</h2>
+                <div class="coming-soon-line"></div>
+                <p class="coming-soon-subtitle">
+                    recordings, compositions, and things made in quiet rooms.
+                </p>
+            </div>
+        </div>
+
+        <!-- ── ABOUT THE ARCHIVE ── -->
+        <div id="section-about" class="page-section active">
+            <div class="coming-soon-container">
+                <h2 class="coming-soon-title">about the<br>archive</h2>
+                <div class="coming-soon-line"></div>
+                <p class="coming-soon-subtitle">
+                    i'm Ingrid and this is a place where i keep the things i've made. photography, games, writing, music. collected in one place as they happen.
+                </p>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        const GAME_SRC = 'https://ingridwetrust.github.io/The-Desert-Ant-Game/';
+        const gameIframe = document.getElementById('game-iframe');
+
+        // ── Hamburger dropdown ──
+        const hamburger = document.getElementById('hamburger');
+        const mobileDropdown = document.getElementById('mobile-dropdown');
+
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('open');
+            mobileDropdown.classList.toggle('open');
+        });
+
+        // All nav items — both desktop sidebar and mobile dropdown
+        const menuItems = document.querySelectorAll('#menu li, #mobile-menu li');
+        const sections = document.querySelectorAll('.page-section');
+
+        function activateSection(target) {
+            const targetId = 'section-' + target;
+            const isGoingToProjects = target === 'projects';
+            const isLeavingProjects = document.getElementById('section-projects').classList.contains('active');
+
+            if (isLeavingProjects && !isGoingToProjects) gameIframe.src = 'about:blank';
+
+            if (isGoingToProjects && gameIframe.src !== GAME_SRC) {
+                gameIframe.src = GAME_SRC;
+                gameIframe.addEventListener('load', () => gameIframe.focus(), { once: true });
+            } else if (isGoingToProjects) {
+                gameIframe.focus();
+            }
+
+            // Update active state on both menus
+            document.querySelectorAll('#menu li, #mobile-menu li').forEach(i => i.classList.remove('active'));
+            document.querySelectorAll(`[data-target="${target}"]`).forEach(i => i.classList.add('active'));
+
+            sections.forEach(s => s.classList.remove('active'));
+            const targetSection = document.getElementById(targetId);
+            if (targetSection) targetSection.classList.add('active');
+
+            document.querySelectorAll('.enlarged-view-container').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.gallery').forEach(el => el.style.display = '');
+
+            // Close mobile dropdown
+            hamburger.classList.remove('open');
+            mobileDropdown.classList.remove('open');
+        }
+
+        menuItems.forEach(item => {
+            item.addEventListener('click', () => {
+                activateSection(item.getAttribute('data-target'));
+            });
+        });
+
+        // Lazy-load images for performance
+        if ('IntersectionObserver' in window) {
+            const lazyImages = document.querySelectorAll('.gallery img');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        if (img.dataset.src) {
+                            img.src = img.dataset.src;
+                            img.removeAttribute('data-src');
+                        }
+                        observer.unobserve(img);
+                    }
+                });
+            }, { rootMargin: '200px' });
+            lazyImages.forEach(img => observer.observe(img));
+        }
+
+        // ── Photo lightbox ──
+        let currentPhotoArray = [];
+        let currentIndex = 0;
+        let currentSection = null;
+
+        document.querySelectorAll('.gallery img').forEach(img => {
+            img.addEventListener('click', function() {
+                currentSection = this.closest('.page-section');
+                const galleryGrid = currentSection.querySelector('.gallery');
+                const enlargedView = currentSection.querySelector('.enlarged-view-container');
+                const enlargedPhoto = enlargedView.querySelector('.enlarged-photo');
+
+                currentPhotoArray = Array.from(galleryGrid.querySelectorAll('img'));
+                currentIndex = currentPhotoArray.indexOf(this);
+                
+                enlargedPhoto.src = this.src;
+                galleryGrid.style.display = 'none';
+                enlargedView.style.display = 'flex';
+                window.scrollTo(0, 0);
+            });
+        });
+
+        function navigatePhoto(direction) {
+            if (!currentSection) return;
+            currentIndex = (currentIndex + direction + currentPhotoArray.length) % currentPhotoArray.length;
+            currentSection.querySelector('.enlarged-photo').src = currentPhotoArray[currentIndex].src;
+        }
+
+        function closeEnlargedView() {
+            if (currentSection) {
+                currentSection.querySelector('.gallery').style.display = '';
+                currentSection.querySelector('.enlarged-view-container').style.display = 'none';
+                currentSection = null;
+            }
+        }
+
+        // Stop game audio if the user switches browser tabs while on Projects
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                const projectsActive = document.getElementById('section-projects').classList.contains('active');
+                if (projectsActive) {
+                    gameIframe.src = 'about:blank';
+                }
+            }
+        });
+
+        // ── Touch swipe for photo lightbox ──
+        let touchStartX = 0;
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.touches[0].clientX;
+        });
+        document.addEventListener('touchend', e => {
+            const diff = touchStartX - e.changedTouches[0].clientX;
+            if (Math.abs(diff) > 50 && currentSection) {
+                navigatePhoto(diff > 0 ? 1 : -1);
+            }
+        });
+    </script>
+</body>
+</html>
